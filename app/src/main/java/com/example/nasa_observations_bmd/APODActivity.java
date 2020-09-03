@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -93,6 +95,7 @@ public class APODActivity extends AppCompatActivity implements DatePickerDialog.
     private void postResults(APOD apod) {
         boolean video = false;
         Bitmap bitmap = null;
+        String temp = null;
         if (apod.getMedia_type().equals("image")) {
             try {
                 bitmap = Picasso.get().load(apod.getUrl()).get();
@@ -102,7 +105,6 @@ public class APODActivity extends AppCompatActivity implements DatePickerDialog.
         } else {
             video = true;
             String url = apod.getUrl();
-            String temp;
             int pos = url.indexOf("?");
             if (pos != -1) {
                 temp = url.substring(30, pos);
@@ -119,12 +121,21 @@ public class APODActivity extends AppCompatActivity implements DatePickerDialog.
         }
         Bitmap finalBitmap = bitmap;
         boolean finalVideo = video;
+        String finalTemp = temp;
         runOnUiThread(() -> {
             progressBar.setVisibility(View.GONE);
             imageView.setImageBitmap(finalBitmap);
             textView.setText("Description:\n\n" + apod.getExplanation());
             if(finalVideo) {
                 imageViewVideo.setVisibility(View.VISIBLE);
+                imageViewVideo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("https://m.youtube.com/watch?feature=youtu.be&v=" + finalTemp));
+                        startActivity(intent);
+                    }
+                });
             }
         });
     }
@@ -140,7 +151,7 @@ public class APODActivity extends AppCompatActivity implements DatePickerDialog.
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         String date = i + "-" + (++i1) + "-" + i2;
         Log.println(Log.ASSERT, "MA", String.valueOf(i) + i1 + i2);
-        dateTextView.setText(i2 + "-" + (++i1) + "-" + i);
+        dateTextView.setText(i2 + "-" + (i1) + "-" + i);
         ApodNetworkThread apodNetworkThread = new ApodNetworkThread(nasaAPI, date);
         apodNetworkThread.start();
         runOnUiThread(() -> {
