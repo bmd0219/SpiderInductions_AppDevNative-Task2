@@ -145,6 +145,7 @@ public class SearchActivity extends AppCompatActivity {
         recyclerViewAdapter.setOnItemClickListener(item -> {
             Intent intent = new Intent(SearchActivity.this, AssetActivity.class);
             intent.putExtra("nasa_id", item.getData().get(0).getNasa_id());
+            intent.putExtra("media_type", item.getData().get(0).getMedia_type());
             startActivity(intent);
         });
     }

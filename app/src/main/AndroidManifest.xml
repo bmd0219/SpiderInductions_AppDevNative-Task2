@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".AssetActivity"
+            android:configChanges="screenSize|orientation"
             android:parentActivityName=".SearchActivity"/>
         <activity
             android:name=".LevelSelectorActivity"
